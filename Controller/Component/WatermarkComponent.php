@@ -36,11 +36,24 @@ class WatermarkComponent extends Component {
    * @return mixed Watermark filename if exists. False otherwise
    */
   private function findGlobalWatermark() {
-    $watermark = Configure::read('plugin.watermark.image');
-    if ($watermark && is_readable($watermark)) {
-      return $watermark;
+    $cacheKey = '_global';
+
+    if (isset($this->_userDirCache[$cacheKey])) {
+      return $this->_userDirCache[$cacheKey];
     }
-    return false;
+
+    $watermark = Configure::read('plugin.watermark.image');
+    if (!$watermark) {
+      $this->_userDirCache[$cacheKey] = false;
+      return false;
+    }
+    if (!is_readable($watermark)) {
+      CakeLog::error("Global watermark file $watermark is not readable");
+      $this->_userDirCache[$cacheKey] = false;
+      return false;
+    }
+    $this->_userDirCache[$cacheKey] = $watermark;
+    return $watermark;
   }
 
   /**
