@@ -5,7 +5,7 @@ class WatermarkComponent extends Component {
   var $controller = null;
   var $components = array('FileManager');
   // To speedup multiple calls
-  var $_userDirCache = array();
+  var $_watermarkCache = array();
 
   public function initialize(Controller $controller) {
     $this->controller = $controller;
@@ -38,21 +38,21 @@ class WatermarkComponent extends Component {
   private function findGlobalWatermark() {
     $cacheKey = '_global';
 
-    if (isset($this->_userDirCache[$cacheKey])) {
-      return $this->_userDirCache[$cacheKey];
+    if (isset($this->_watermarkCache[$cacheKey])) {
+      return $this->_watermarkCache[$cacheKey];
     }
 
     $watermark = Configure::read('plugin.watermark.image');
     if (!$watermark) {
-      $this->_userDirCache[$cacheKey] = false;
+      $this->_watermarkCache[$cacheKey] = false;
       return false;
     }
     if (!is_readable($watermark)) {
       CakeLog::error("Global watermark file $watermark is not readable");
-      $this->_userDirCache[$cacheKey] = false;
+      $this->_watermarkCache[$cacheKey] = false;
       return false;
     }
-    $this->_userDirCache[$cacheKey] = $watermark;
+    $this->_watermarkCache[$cacheKey] = $watermark;
     return $watermark;
   }
 
@@ -64,15 +64,15 @@ class WatermarkComponent extends Component {
   private function findUserWatermark() {
     $userDir = $this->FileManager->getUserDir();
 
-    if (isset($this->_userDirCache[$userDir])) {
-      return $this->_userDirCache[$userDir];
+    if (isset($this->_watermarkCache[$userDir])) {
+      return $this->_watermarkCache[$userDir];
     }
 
     App::uses('Folder', 'Utility');
     $dir = new Folder($userDir);
     $files = $dir->find('watermark\.(png|gif)', true);
     if (!count($files)) {
-      $this->_userDirCache[$userDir] = false;
+      $this->_watermarkCache[$userDir] = false;
       return false;
     }
     if (count($files) > 1) {
@@ -82,11 +82,11 @@ class WatermarkComponent extends Component {
     $watermark = Folder::addPathElement($userDir, $files[0]);;
     if (!is_readable($watermark)) {
       CakeLog::warn("Watermark file $watermark is not readable");
-      $this->_userDirCache[$userDir] = false;
+      $this->_watermarkCache[$userDir] = false;
       return false;
     }
 
-    $this->_userDirCache[$userDir] = $watermark;
+    $this->_watermarkCache[$userDir] = $watermark;
     return $watermark;
   }
 
