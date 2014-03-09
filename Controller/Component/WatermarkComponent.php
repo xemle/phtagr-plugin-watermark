@@ -48,9 +48,13 @@ class WatermarkComponent extends Component {
       return false;
     }
     if (!is_readable($watermark)) {
-      CakeLog::error("Global watermark file $watermark is not readable");
-      $this->_watermarkCache[$cacheKey] = false;
-      return false;
+      if (is_readable(APP . $watermark)) {
+        $watermark = APP . $watermark;
+      } else {
+        CakeLog::error("Global watermark file $watermark is not readable. Use absolute filepath");
+        $this->_watermarkCache[$cacheKey] = false;
+        return false;
+      }
     }
     $this->_watermarkCache[$cacheKey] = $watermark;
     return $watermark;

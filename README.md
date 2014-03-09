@@ -50,9 +50,10 @@ plugin will use this file. `watermark.gif` is also a valid watermark file.
 If an administrator want a global watermark he has to configure the watermark
 image via `Configuration`. Use
 
-    Configure::write('plugin.watermark.image', 'path/to/watermark/image');
+    Configure::write('plugin.watermark.image', '/path/to/watermark/image');
 
-in phTagr's `Config/core.php` file.
+in phTagr's `Config/core.php` file. The file reference should be the absolute
+filepath or relative to phtagr's root directory (`APP` path constant).
 
 The user watermark has a higher priority. If the user has a watermark image
 and the admin set a global watermark image the user watermark image will be
